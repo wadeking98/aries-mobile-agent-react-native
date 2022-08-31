@@ -7,7 +7,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { useTheme } from '../../contexts/theme'
 import { QrCodeScanError } from '../../types/error'
+import PopupModal from '../modals/PopupModal'
 
+import { InfoBoxType } from './InfoBox'
 import QRScannerClose from './QRScannerClose'
 import QRScannerTorch from './QRScannerTorch'
 
@@ -35,12 +37,19 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
   const navigation = useNavigation()
   const [cameraActive, setCameraActive] = useState(true)
   const [torchActive, setTorchActive] = useState(false)
+  const [popupVisable, setPopupVisible] = useState(true)
   const { width, height } = useWindowDimensions()
   const portraitMode = height > width
   const { t } = useTranslation()
   const invalidQrCodes = new Set<string>()
   const { ColorPallet, TextTheme } = useTheme()
   const styles = StyleSheet.create({
+    errorBodyText: {
+      ...TextTheme.normal,
+      flexShrink: 1,
+      marginVertical: 16,
+      color: ColorPallet.notification.errorText,
+    },
     container: {
       height: '100%',
       width: '100%',
@@ -87,6 +96,7 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
           if (invalidQrCodes.has(event.data)) {
             return
           }
+          setPopupVisible(true)
           if (error?.data === event?.data) {
             invalidQrCodes.add(error.data)
             if (enableCameraOnError) {
@@ -103,11 +113,21 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
         <CameraViewContainer portrait={portraitMode}>
           <QRScannerClose onPress={() => navigation.goBack()}></QRScannerClose>
           <View style={styles.errorContainer}>
-            {error ? (
-              <>
-                <Icon style={styles.icon} name="cancel" size={30}></Icon>
-                <Text style={[TextTheme.caption, { color: ColorPallet.grayscale.white }]}>{error.message}</Text>
-              </>
+            {popupVisable && error ? (
+              <PopupModal
+                notificationType={InfoBoxType.Error}
+                message={`${t('Error.ErrorCode')} ${error?.code} - ${error.message}`}
+                title={t('Scan.QrCodeErrorTitle')}
+                onCallToActionLabel={t('Global.Okay')}
+                onCallToActionPressed={() => {
+                  setPopupVisible(false)
+                }}
+                bodyContent={
+                  <View>
+                    <Text style={styles.errorBodyText}>{t('Scan.QrCodeErrorDescription')}</Text>
+                  </View>
+                }
+              ></PopupModal>
             ) : (
               <Text style={[TextTheme.caption, { color: ColorPallet.grayscale.white, height: 30, margin: 4 }]}> </Text>
             )}

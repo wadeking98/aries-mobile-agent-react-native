@@ -168,7 +168,9 @@ const translation = {
     "InvalidQrCode": "Invalid QR code. Please try again.",
     "UnableToHandleRedirection": "Unable to handle redirection",
     "Close": "Close",
-    "Torch": "Flash"
+    "Torch": "Flash",
+    "QrCodeErrorTitle": "You've scanned an invalid QR Code",
+    "QrCodeErrorDescription": "The QR code may have been used already. You need to use a unique QR code. Try refreshing the page to receive a new QR code."
   },
   "Connection": {
     "JustAMoment": "Just a moment while we make a secure connection...",

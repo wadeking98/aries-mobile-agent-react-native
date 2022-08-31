@@ -1,8 +1,10 @@
 export class QrCodeScanError extends Error {
   public data?: string
-  public constructor(message?: string, data?: string) {
+  public code?: number
+  public constructor(message?: string, data?: string, code?: number) {
     super(message)
     this.data = data
+    this.code = code
   }
 }
 

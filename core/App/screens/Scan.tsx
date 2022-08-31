@@ -59,7 +59,11 @@ const Scan: React.FC<ScanProps> = ({ navigation }) => {
         await handleInvitation(uri)
       }
     } catch (e: unknown) {
-      const error = new QrCodeScanError(t('Scan.InvalidQrCode'), event.data)
+      let errorMsg = t('Scan.InvalidQrCode')
+      if ((e as BifoldError)?.code) {
+        errorMsg = (e as BifoldError).description
+      }
+      const error = new QrCodeScanError(errorMsg, event.data, (e as BifoldError)?.code)
       setQrCodeScanError(error)
     }
   }
