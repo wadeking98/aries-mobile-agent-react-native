@@ -1,5 +1,6 @@
 import { agentDependencies } from '@aries-framework/react-native'
 import React, { createContext, useContext, useState } from 'react'
+import { DeviceEventEmitter } from 'react-native'
 import { useTranslation } from 'react-i18next'
 
 import { DispatchAction } from '../contexts/reducers/store'
@@ -14,6 +15,7 @@ import {
 } from '../services/keychain'
 import { WalletSecret } from '../types/security'
 import { hashPIN } from '../utils/crypto'
+import { EventTypes } from 'constants'
 
 export interface AuthContext {
   checkPIN: (PIN: string) => Promise<boolean>
@@ -42,10 +44,14 @@ export const AuthProvider: React.FC = ({ children }) => {
       return walletSecret
     }
 
-    const secret = await loadWalletSecret(t('Biometry.UnlockPromptTitle'), t('Biometry.UnlockPromptDescription'))
-    if (!secret) {
+    const { secret, err } = await loadWalletSecret(t('Biometry.UnlockPromptTitle'), t('Biometry.UnlockPromptDescription'))
+    if (!secret || err) {
+      if (err === "code: 9, msg: Too many attempts. Fingerprint sensor disabled.") {
+        DeviceEventEmitter.emit(EventTypes.BOIMETRY_ERROR, true)
+      }
       return
     }
+    DeviceEventEmitter.emit(EventTypes.BOIMETRY_ERROR, false)
     setWalletSecret(secret)
 
     return secret

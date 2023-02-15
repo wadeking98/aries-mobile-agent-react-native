@@ -27,6 +27,7 @@ export enum KeychainServices {
 export enum EventTypes {
   ERROR_ADDED = 'ErrorAdded',
   ERROR_REMOVED = 'ErrorRemoved',
+  BOIMETRY_ERROR = 'BiometryError',
 }
 
 export const second = 1000

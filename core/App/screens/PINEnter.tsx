@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { StatusBar, Keyboard, StyleSheet, Text, Image, View, TouchableWithoutFeedback, ScrollView } from 'react-native'
+import { StatusBar, Keyboard, StyleSheet, Text, Image, View, TouchableWithoutFeedback, ScrollView, DeviceEventEmitter } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import ButtonLoading from '../components/animated/ButtonLoading'
@@ -10,7 +10,7 @@ import PINInput from '../components/inputs/PINInput'
 import { InfoBoxType } from '../components/misc/InfoBox'
 import AlertModal from '../components/modals/AlertModal'
 import PopupModal from '../components/modals/PopupModal'
-import { minPINLength, attemptLockoutBaseRules, attemptLockoutThresholdRules } from '../constants'
+import { minPINLength, attemptLockoutBaseRules, attemptLockoutThresholdRules, EventTypes } from '../constants'
 import { useAuth } from '../contexts/auth'
 import { DispatchAction } from '../contexts/reducers/store'
 import { useStore } from '../contexts/store'
@@ -45,6 +45,7 @@ const DismissKeyboardView: React.FC<{ children: React.ReactNode }> = ({ children
 const PINEnter: React.FC<PINEnterProps> = ({ setAuthenticated, usage = PINEntryUsage.WalletUnlock }) => {
   const { t } = useTranslation()
   const { checkPIN, getWalletCredentials, isBiometricsActive, disableBiometrics } = useAuth()
+  const [biometryError, setBiometryError] = useState<boolean>(false)
   const [store, dispatch] = useStore()
   const [PIN, setPIN] = useState<string>('')
   const [continueEnabled, setContinueEnabled] = useState(true)
@@ -64,6 +65,11 @@ const PINEnter: React.FC<PINEnterProps> = ({ setAuthenticated, usage = PINEntryU
       ...TextTheme.normal,
       marginVertical: 5,
     },
+  })
+
+  //listen for biometrics login errors
+  DeviceEventEmitter.addListener(EventTypes.BOIMETRY_ERROR, (err: boolean) => {
+    setBiometryError(err)
   })
 
   // This method is used to notify the app that the user is able to receive another lockout penalty
