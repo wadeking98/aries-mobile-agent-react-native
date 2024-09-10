@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { StyleSheet, Vibration, View, useWindowDimensions } from 'react-native'
 import { useOrientationChange, OrientationType } from 'react-native-orientation-locker'
 import { Camera, Code, useCameraDevice, useCameraFormat, useCodeScanner } from 'react-native-vision-camera'
@@ -14,6 +14,7 @@ interface Props {
 const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError, torchActive }) => {
   const [orientation, setOrientation] = useState(OrientationType.PORTRAIT)
   const [cameraActive, setCameraActive] = useState(true)
+  const [cameraReady, setCameraReady] = useState(false)
   const orientationDegrees: { [key: string]: string } = {
     [OrientationType.PORTRAIT]: '0deg',
     [OrientationType['LANDSCAPE-LEFT']]: '270deg',
@@ -33,6 +34,7 @@ const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnErro
   useOrientationChange((orientationType) => {
     setOrientation(orientationType)
   })
+  const camera = useRef<Camera>(null)
 
   const onCodeScanned = useCallback(
     (codes: Code[]) => {
@@ -63,6 +65,20 @@ const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnErro
     }
   }, [error])
 
+  useEffect(() => {
+    if (!device || !camera.current || !cameraReady) {
+      console.log('No device or camera')
+      return
+    }
+
+    
+    console.warn('Starting recording')
+    camera.current.startRecording({ fileType: 'mp4', onRecordingError: (error) => console.warn('Error recording', error), onRecordingFinished: (video) => console.warn('Recording finished', video) })
+    setTimeout(() => {
+      camera.current?.stopRecording()
+    }, 5000)
+  }, [cameraReady, device, camera])
+
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],
     onCodeScanned: onCodeScanned,
@@ -77,6 +93,7 @@ const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnErro
           isActive={cameraActive}
           codeScanner={codeScanner}
           format={format}
+          onInitialized={()=>{setCameraReady(true); console.log('Camera initialized')}}
         />
       )}
     </View>
