@@ -66,6 +66,7 @@ const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnErro
   }, [error])
 
   useEffect(() => {
+    console.log("status:",camera,cameraReady)
     if (!device || !camera.current || !cameraReady) {
       console.log('No device or camera')
       return
@@ -87,6 +88,8 @@ const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnErro
     <View style={[StyleSheet.absoluteFill, { transform: [{ rotate: orientationDegrees[orientation] ?? '0deg' }] }]}>
       {device && (
         <Camera
+          ref={camera}
+          video={true}
           style={StyleSheet.absoluteFill}
           device={device}
           torch={torchActive ? 'on' : 'off'}
