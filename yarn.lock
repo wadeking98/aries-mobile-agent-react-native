@@ -2994,6 +2994,7 @@ __metadata:
     react-native-toast-message: ^2.1.6
     react-native-uuid: ^2.0.1
     react-native-vector-icons: ^10.0.0
+    react-native-video: "*"
     react-native-vision-camera: "*"
     tsyringe: ^4.7.0
     uuid: ^9.0.0
@@ -5944,6 +5945,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-native-video@npm:^5.0.20":
+  version: 5.0.20
+  resolution: "@types/react-native-video@npm:5.0.20"
+  dependencies:
+    "@types/react": "*"
+    react-native: "*"
+  checksum: 1fea9c3e9ac9161634179a973782e8c161e27a357e8fec84d24dd1af5b9de6d11c7c9205aafbcbf746694e45c36ae442b8c768b3ca7ca95e0d9c777f84e3112b
+  languageName: node
+  linkType: hard
+
 "@types/react-native@npm:0.71.5":
   version: 0.71.5
   resolution: "@types/react-native@npm:0.71.5"
@@ -6931,6 +6942,7 @@ __metadata:
     "@types/lodash.startcase": ^4.4.7
     "@types/react": ^18.0.24
     "@types/react-native": 0.71.5
+    "@types/react-native-video": ^5.0.20
     axios: ^1.4.0
     babel-plugin-module-resolver: ^5.0.0
     eslint: ^8.48.0
@@ -6993,6 +7005,7 @@ __metadata:
     "@react-native-community/eslint-config": ^3.2.0
     "@types/conventional-recommended-bump": ^6.1.0
     "@types/eslint__js": ^8.42.3
+    "@types/react-native-video": ^5.0.20
     "@typescript-eslint/eslint-plugin": ^7.18.0
     "@typescript-eslint/parser": ^7.18.0
     conventional-changelog-conventionalcommits: ^5.0.0

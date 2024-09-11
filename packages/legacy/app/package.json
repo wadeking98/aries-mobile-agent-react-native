@@ -101,6 +101,7 @@
     "@types/lodash.startcase": "^4.4.7",
     "@types/react": "^18.0.24",
     "@types/react-native": "0.71.5",
+    "@types/react-native-video": "^5.0.20",
     "babel-plugin-module-resolver": "^5.0.0",
     "eslint": "^8.48.0",
     "eslint-import-resolver-typescript": "^2.5.0",

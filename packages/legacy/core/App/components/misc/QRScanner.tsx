@@ -71,8 +71,8 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
   })
 
   useEffect(()=>{
-    if(video){
-      setVideoFile(require(video.path))
+    if(video?.path){
+      setVideoFile({uri:video.path})
     }
   },[video])
 
