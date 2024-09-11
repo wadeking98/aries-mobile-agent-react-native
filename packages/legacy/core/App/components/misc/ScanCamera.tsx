@@ -10,11 +10,14 @@ interface Props {
   error?: QrCodeScanError | null
   enableCameraOnError?: boolean
   torchActive?: boolean
+  startRecording?: boolean
+  onRecorded?: (video: any) => void
 }
-const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError, torchActive }) => {
+const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError, torchActive, startRecording, onRecorded }) => {
   const [orientation, setOrientation] = useState(OrientationType.PORTRAIT)
   const [cameraActive, setCameraActive] = useState(true)
   const [cameraReady, setCameraReady] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
   const orientationDegrees: { [key: string]: string } = {
     [OrientationType.PORTRAIT]: '0deg',
     [OrientationType['LANDSCAPE-LEFT']]: '270deg',
@@ -65,20 +68,15 @@ const ScanCamera: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnErro
     }
   }, [error])
 
-  useEffect(() => {
-    console.log("status:",camera,cameraReady)
-    if (!device || !camera.current || !cameraReady) {
-      console.log('No device or camera')
-      return
+  useEffect(()=>{
+    if(startRecording && cameraReady && camera.current){
+      setIsRecording(true)
+      camera.current.startRecording({ fileType: 'mp4', onRecordingError: (error) => console.warn('Error recording', error), onRecordingFinished: onRecorded ?? (()=>{}) })
+    }else if (isRecording && camera.current){
+      camera.current.stopRecording()
+      setIsRecording(false)
     }
-
-    
-    console.warn('Starting recording')
-    camera.current.startRecording({ fileType: 'mp4', onRecordingError: (error) => console.warn('Error recording', error), onRecordingFinished: (video) => console.warn('Recording finished', video) })
-    setTimeout(() => {
-      camera.current?.stopRecording()
-    }, 5000)
-  }, [cameraReady, device, camera])
+  }, [startRecording, cameraReady, device, camera])
 
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],

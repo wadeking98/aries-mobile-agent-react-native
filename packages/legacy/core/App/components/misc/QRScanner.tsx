@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { View, Modal, Pressable, StyleSheet, Text } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Video from 'react-native-video'
 
 import { hitSlop } from '../../constants'
 import { useTheme } from '../../contexts/theme'
@@ -27,6 +28,9 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
   const [{ showScanHelp, showScanButton }] = useServices([TOKENS.CONFIG])
   const [torchActive, setTorchActive] = useState(false)
   const [showInfoBox, setShowInfoBox] = useState(false)
+  const [recording, setRecording] = useState(false)
+  const [video, setVideo] = useState<any>(null)
+  const [videoFile, setVideoFile] = useState<any>(null)
   const [showErrorDetailsModal, setShowErrorDetailsModal] = useState(false)
   const { t } = useTranslation()
   const { ColorPallet, TextTheme } = useTheme()
@@ -66,10 +70,16 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
     },
   })
 
+  useEffect(()=>{
+    if(video){
+      setVideoFile(require(video.path))
+    }
+  },[video])
+
   const styleForState = ({ pressed }: { pressed: boolean }) => [{ opacity: pressed ? 0.2 : 1 }]
 
   const toggleShowInfoBox = () => setShowInfoBox(!showInfoBox)
-
+  const toggleRecording = () => setRecording(!recording)
   return (
     <View style={styles.container}>
       <Modal visible={showInfoBox} animationType="fade" transparent>
@@ -99,7 +109,7 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
           onDismissPressed={() => setShowErrorDetailsModal(false)}
         />
       )}
-      <ScanCamera handleCodeScan={handleCodeScan} error={error} enableCameraOnError={enableCameraOnError}></ScanCamera>
+      {videoFile ? <Video source={videoFile} style={[StyleSheet.absoluteFill]}></Video> :<ScanCamera handleCodeScan={handleCodeScan} error={error} enableCameraOnError={enableCameraOnError} startRecording={recording} onRecorded={(video)=>{setVideo(video);console.warn(video)}}></ScanCamera>}
       <View style={{ flex: 1 }}>
         <View style={styles.messageContainer}>
           {error ? (
@@ -139,6 +149,16 @@ const QRScanner: React.FC<Props> = ({ handleCodeScan, error, enableCameraOnError
               hitSlop={hitSlop}
             >
               <Icon name="circle-outline" size={60} style={{ color: 'white', marginBottom: -15 }} />
+            </Pressable>
+            <Pressable
+              accessibilityLabel={t('Scan.ScanNow')}
+              accessibilityRole={'button'}
+              testID={testIdWithKey('record')}
+              onPress={toggleRecording}
+              style={styleForState}
+              hitSlop={hitSlop}
+            >
+              <Icon name="video" size={60} style={{ color: 'white', marginBottom: -15 }} />
             </Pressable>
           </View>
         )}
