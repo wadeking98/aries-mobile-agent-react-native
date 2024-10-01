@@ -36,7 +36,11 @@ import SettingStack from './SettingStack'
 import TabStack from './TabStack'
 import { useDefaultStackOptions } from './defaultStackOptions'
 
-const RootStack: React.FC = () => {
+interface RootStackProps {
+  initialRouteName?: string
+}
+
+const RootStack: React.FC<RootStackProps> = ({ initialRouteName }) => {
   const [state, dispatch] = useStore()
   const { removeSavedWalletSecret } = useAuth()
   const { agent } = useAgent()
@@ -61,7 +65,7 @@ const RootStack: React.FC = () => {
       const meta = proof?.metadata?.get(ProofMetadata.customMetadata) as ProofCustomMetadata
       if (meta?.delete_conn_after_seen) {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        agent?.connections.deleteById(proof?.connectionId ?? '').catch(() => {})
+        agent?.connections.deleteById(proof?.connectionId ?? '').catch(() => { })
         proof?.metadata.set(ProofMetadata.customMetadata, { ...meta, delete_conn_after_seen: false })
       }
     })
@@ -262,8 +266,10 @@ const RootStack: React.FC = () => {
       },
     })
 
+    console.log('rootstack initialRouteName', initialRouteName)
+
     return (
-      <Stack.Navigator initialRouteName={Screens.Splash} screenOptions={{ ...defaultStackOptions, headerShown: false }}>
+      <Stack.Navigator initialRouteName={initialRouteName ?? Screens.Splash} screenOptions={{ ...defaultStackOptions, headerShown: false }}>
         <Stack.Screen name={Screens.Splash} component={splash} />
         <Stack.Screen name={Stacks.TabStack} component={TabStack} />
         <Stack.Screen
